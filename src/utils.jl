@@ -1,0 +1,1 @@
+remap(x, from, to) = (x - from[1]) * (to[2] - to[1]) / (from[2] - from[1]) + to[1]
