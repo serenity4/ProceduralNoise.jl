@@ -2,23 +2,15 @@
 """
 
 function adjacent(p)
-    # neighbors .= Base.Iterators.product(map(adjacent, tup)...)
     fp1, fp2 = floor.(p)
     cp1, cp2 = ceil.(p)
     @SArray Int[fp1 cp1 fp1 cp1; fp2 fp2 cp2 cp2]
-end
-
-function adjacent!(arr, p)
-    fp1, fp2 = floor.((p[1], p[2]))
-    cp1, cp2 = ceil.((p[1], p[2]))
-    arr .= @SArray [fp1 cp1 fp1 cp1; fp2 fp2 cp2 cp2]
 end
 
 function lerp_weights(w)
     w1, w2 = w
     @SVector [1 - w1 - w2 + w1 * w2, w1 - w1 * w2, w2 - w1 * w2, w1 * w2]
 end
-
 
 function perlin!(A::AbstractArray, grid::AbstractArray)
     resolution, scale = size(A), size(grid)
@@ -62,7 +54,7 @@ function perlin_!(A, grid, weights, neighbors, scaled_indices, dot_prod_tmp, w, 
         scaled_indices .= remap.(indices, ranges[1], ranges[2])
         @. w = fade(scaled_indices - floor(scaled_indices))
         weights = lerp_weights(w)
-        adjacent!(neighbors, scaled_indices)
+        neighbors .= adjacent(scaled_indices)
         value = 0
         for i in 1:2^n
             @views neigh = neighbors[:, i]

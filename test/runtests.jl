@@ -2,5 +2,5 @@ using ProceduralNoise
 using Test
 
 @testset "ProceduralNoise.jl" begin
-    # Write your own tests here.
+    perlin((512, 512), (32, 32))
 end
