@@ -96,7 +96,6 @@ end
 
 function perlin(resolution, grid::AbstractArray)
     noise = zeros(resolution...)
-    scale = size(grid)
     perlin!(noise, grid)
 end
 
