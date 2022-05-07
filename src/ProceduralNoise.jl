@@ -7,10 +7,12 @@ using LinearAlgebra
 using StaticArrays
 using Base.Threads:@threads
 using Interpolations
+using CircularArrays
 
 include("utils.jl")
-include("gradient.jl")
+include("perlin.jl")
+include("fractal.jl")
 
-export perlin, perlin!, perlin2d!, remap, create_gradients
+export Perlin, Fractal, remap, create_gradients
 
 end # module
