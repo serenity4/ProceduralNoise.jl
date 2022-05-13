@@ -18,4 +18,9 @@ using LinearAlgebra
 
     # The value at the middle point is the average of all gradient contributions.
     @test p(1.5, 1.5) ≈ sum(p.gradients[1:2, 1:2] .⋅ [[j * 0.5, i * 0.5] for j in (1, -1), i in (1, -1)]) / 4
+
+    scale = (2,) .^ 4
+    p = Perlin(scale)
+    v = p(2.5)
+    @test v isa Float64
 end;

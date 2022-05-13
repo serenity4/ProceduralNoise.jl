@@ -1,6 +1,6 @@
 abstract type NoiseGenerator end
 
-(noise::NoiseGenerator)(coordinates::Real...) = noise(SVector{length(coordinates), eltype(coordinates)}(coordinates))
+(noise::NoiseGenerator)(x::T, y::T, zs::T...) where {T} = noise(SVector{2 + length(zs), T}(x, y, zs...))
 
 struct Perlin{N,A<:AbstractArray{SVector{N,Float64},N}} <: NoiseGenerator
     gradients::A
@@ -32,7 +32,7 @@ function (perlin::Perlin)(position)
     rel_grid = position .- first(neighbor_inds)
     weights = fade.(rel_grid)
 
-    interpolate_bilinear(noise_contribs, weights)
+    length(position) == 1 ? lerp(noise_contribs..., only(weights)) : interpolate_bilinear(noise_contribs, weights)
 end
 
 fade(x) = 6x^5 - 15x^4 + 10x^3
@@ -42,6 +42,12 @@ function adjacent(p)
     cp1, cp2 = (fp1, fp2) .+ 1
     @SArray NTuple{2,Int}[(fp1, fp2) (fp1, cp2)
                           (cp1, fp2) (cp1, cp2)]
+end
+
+function adjacent(p::Number)
+    fp1 = floor(Int, p)
+    cp1 = fp1 + 1
+    @SVector Int[fp1, cp1]
 end
 
 # Dead code; the corner points are always checked by Interpolations.jl which makes it slow for repeated use.
