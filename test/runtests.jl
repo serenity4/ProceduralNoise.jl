@@ -33,7 +33,7 @@ using Test
             @test perlin(scale) == zeros(scale)
             A = perlin(512)
             @test !allequal(A)
-            @test all(-1 ≤ x ≤ 1 for x in A)
+            @test all(0 ≤ x ≤ 1 for x in A)
             @test A == perlin(A)
         end
 
@@ -49,7 +49,14 @@ using Test
 
             A = perlin(scale .* 2^2)
             @test !allequal(A)
-            @test all(-1 ≤ x ≤ 1 for x in A)
+            @test all(0 ≤ x ≤ 1 for x in A)
+
+            A = perlin((512, 512), (-4.0, -3.0))
+            @test all(-4.0 ≤ x ≤ -3.0 for x in A)
+
+            perlin = Perlin{Float32}(scale)
+            A = perlin(scale .* 2^2)
+            @test A isa Matrix{Float32}
         end
     end
 
@@ -59,6 +66,10 @@ using Test
         fractal = Fractal{Perlin}(scale, octaves = 8, persistence = 0.75)
         A = fractal(resolution .* 2^2)
         @test !allequal(A)
-        @test all(-1 ≤ x ≤ 1 for x in A)
+        @test all(0 ≤ x ≤ 1 for x in A)
+
+        fractal = Fractal{Perlin{Float32}}(scale, octaves = 8, persistence = 0.75)
+        A = fractal(resolution .* 2^2)
+        @test A isa Matrix{Float32}
     end
 end;

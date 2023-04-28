@@ -7,6 +7,7 @@ using GridHelpers
 using StaticArrays: @SMatrix
 
 include("utils.jl")
+include("noise.jl")
 include("perlin.jl")
 include("fractal.jl")
 

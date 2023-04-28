@@ -1,28 +1,3 @@
-abstract type NoiseGenerator end
-
-Base.broadcastable(noise::NoiseGenerator) = Ref(noise)
-
-function (noise!::NoiseGenerator)(A::Vector)
-    n = length(A)
-    for i in eachindex(A)
-        @inbounds A[i] = evaluate(noise!, remap(i, 1, n, 1, noise!.scale[1]))
-    end
-    A
-end
-
-function (noise!::NoiseGenerator)(A::Matrix)
-    dims = size(A)
-    for j in 1:dims[2]
-        for i in 1:dims[1]
-            @inbounds A[i, j] = evaluate(noise!, remap.((i, j), 1, dims, 1, noise!.scale))
-        end
-    end
-    A
-end
-
-(noise::NoiseGenerator)(size::Integer, T = Float64) = noise(zeros(T, size))
-(noise::NoiseGenerator)(size::NTuple{2}, T = Float64) = noise(zeros(T, size...))
-
 """
     Perlin(scale_x) # 1D Perlin noise
     Perlin(scale_x, scale_y) # 2D Perlin noise
@@ -32,7 +7,7 @@ Perlin noise, using preinitialized gradients set at construction time.
 
 Evaluation is fully deterministic given a set of gradients.
 """
-struct Perlin{N,T} <: NoiseGenerator
+struct Perlin{N,T} <: NoiseGenerator{N,T}
     scale::NTuple{N,Int}
     gradients::Array{NTuple{N,T},N}
 end
@@ -68,7 +43,7 @@ function adjacent(p::Number)
     (fp1, fp1 + 1)
 end
 
-lerp(x, y, w) = x * (1 - w) + y * w
+lerp(x, y, w) = x * (one(w) - w) + y * w
 
 corner_value(perlin::Perlin, corner, location) = perlin.gradients[corner] ⋅ (location .- corner[])
 
@@ -80,7 +55,7 @@ function evaluate(perlin::Perlin{2}, location::NTuple{2,T}) where {T}
     ]
     weights = location .- cell.bottom_left[]
     smoothed_weights = fade.(weights)
-    interpolate_bilinear(corner_values, smoothed_weights .+ 1, Cell(1, 1))
+    interpolate_bilinear(corner_values, smoothed_weights .+ one(T), Cell(1, 1))
 end
 
 ⋅(px, py) = px[1] * py[1] + px[2] * py[2]

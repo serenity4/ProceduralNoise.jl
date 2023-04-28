@@ -1,20 +1,13 @@
 using ProceduralNoise
-using CairoMakie
+using Plots: Plots, heatmap
 
-plot_perlin(A::AbstractVector) = lines(A)
-plot_perlin(A::AbstractMatrix) = heatmap(A, colormap=:inferno)
-plot_perlin!(A::AbstractMatrix) = heatmap!(A, colormap=:inferno)
+plot(A::AbstractVector) = Plots.plot(A)
+plot(A::AbstractMatrix) = heatmap(A, colormap=:inferno)
 
-function plot_perlin(scale, resolution)
-  A = Perlin(scale)(resolution)
-  plot_perlin(A)
-end
+plot_perlin(scale, resolution) = plot(Perlin(scale)(resolution))
 plot_perlin(scale::Integer, resolution::Integer) = plot_perlin((2, 2) .^ scale, (2, 2) .^ resolution)
 
-function plot_fractal(::Type{T}, scale, resolution; fractal_kwargs...) where {T<:NoiseGenerator}
-  A = Fractal{T}(scale; fractal_kwargs...)(resolution)
-  plot_perlin(A)
-end
+plot_fractal(::Type{T}, scale, resolution; fractal_kwargs...) where {T<:NoiseGenerator} = plot(Fractal{T}(scale; fractal_kwargs...)(resolution))
 plot_fractal(::Type{T}, scale::Integer, resolution::Integer; kwargs...) where {T<:NoiseGenerator} = plot_fractal(T, (2, 2) .^ scale, (2, 2) .^ resolution; kwargs...)
 
 plot_perlin(1, 9)
