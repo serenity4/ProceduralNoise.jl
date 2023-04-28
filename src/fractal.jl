@@ -1,24 +1,33 @@
-struct Fractal{G<:NoiseGenerator,F} <: NoiseGenerator
-  noise::G
-  octaves::Int
-  amplitude::Float64
-  base_frequency::F
+struct Fractal{G<:NoiseGenerator} <: NoiseGenerator
+  layers::Vector{G}
   persistence::Float64
-  lacunarity::Float64
 end
 
-function Fractal(noise::NoiseGenerator; base_frequency = ntuple(Returns(1.), ndims(noise)), octaves = 8, amplitude = 1., persistence = 0.5, lacunarity = 2.)
-  Fractal(noise, octaves, amplitude, base_frequency, persistence, lacunarity)
+function Fractal{G}(scale; octaves = 8, persistence = 0.5, lacunarity = 2.) where {G<:NoiseGenerator}
+  layers = [G(round.(Int, scale .* lacunarity .^ (octave - 1))) for octave in 1:octaves]
+  Fractal(layers, persistence)
 end
 
-function (f::Fractal)(position)
-  (; amplitude, persistence, lacunarity, noise) = f
-  frequency = f.base_frequency
-  value = 0.
-  for _ in 1:f.octaves
-      value += noise(position .* frequency) * amplitude
-      frequency = frequency .* lacunarity
-      amplitude *= persistence
+function (noise!::Fractal)(A::Vector)
+  fill!(A, zero(eltype(A)))
+  n = length(A)
+  for (octave, layer) in enumerate(noise!.layers)
+    for i in eachindex(A)
+      @inbounds A[i] += evaluate(layer, remap(i, 1, n, 1, layer.scale[1])) * noise!.persistence ^ octave
+    end
   end
-  value
+  A
+end
+
+function (noise!::Fractal)(A::Matrix)
+  fill!(A, zero(eltype(A)))
+  dims = size(A)
+  for (octave, layer) in enumerate(noise!.layers)
+    for j in 1:dims[2]
+        for i in 1:dims[1]
+            @inbounds A[i, j] += evaluate(layer, remap.((i, j), 1, dims, 1, layer.scale)) * noise!.persistence ^ octave
+        end
+    end
+  end
+  A
 end

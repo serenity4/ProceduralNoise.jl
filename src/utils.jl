@@ -1,1 +1,2 @@
-remap(x, from, to) = (x - from[1]) * (to[2] - to[1]) / (from[2] - from[1]) + to[1]
+remap(x, from, to) = remap(x, from[1], from[2], to[1], to[2])
+remap(x, low1, high1, low2, high2) = (x - low1) * (high2 - low2) / (high1 - low1) + low2
