@@ -1,7 +1,7 @@
 name = "ProceduralNoise"
 uuid = "3e47a1cc-29f2-4c46-afe0-95fe1d251308"
 authors = ["Cédric Belmant"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 GridHelpers = "b96441d5-4525-4e55-9909-ccff87bff6f6"
