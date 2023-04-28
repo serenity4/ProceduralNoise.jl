@@ -11,6 +11,6 @@ include("noise.jl")
 include("perlin.jl")
 include("fractal.jl")
 
-export NoiseGenerator, Perlin, Fractal, remap, create_gradients
+export NoiseGenerator, Perlin, Fractal, create_gradients
 
 end # module
