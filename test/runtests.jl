@@ -1,6 +1,6 @@
 using ProceduralNoise
 using GridHelpers
-using ProceduralNoise: evaluate, ⋅
+using ProceduralNoise: evaluate, ⋅, remap
 using Test
 
 @testset "ProceduralNoise.jl" begin
